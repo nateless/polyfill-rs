@@ -5,7 +5,7 @@
 
 use crate::errors::{PolyfillError, Result};
 use ::url::Url;
-use alloy_primitives::{Address, U256};
+use alloy::primitives::{Address, U256};
 use base64::{engine::general_purpose::URL_SAFE, Engine};
 use chrono::{DateTime, Utc};
 use hmac::{Hmac, Mac};

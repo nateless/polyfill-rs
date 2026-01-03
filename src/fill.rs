@@ -6,7 +6,7 @@
 use crate::errors::{PolyfillError, Result};
 use crate::types::*;
 use crate::utils::math;
-use alloy_primitives::Address;
+use alloy::primitives::Address;
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
 use std::collections::HashMap;
@@ -630,8 +630,8 @@ mod tests {
             price: dec!(0.75),
             timestamp: chrono::Utc::now(),
             token_id: "token_1".to_string(),
-            maker_address: alloy_primitives::Address::ZERO,
-            taker_address: alloy_primitives::Address::ZERO,
+            maker_address: alloy::primitives::Address::ZERO,
+            taker_address: alloy::primitives::Address::ZERO,
             fee: dec!(0.01),
         };
 

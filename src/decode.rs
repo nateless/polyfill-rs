@@ -5,7 +5,7 @@
 
 use crate::errors::{PolyfillError, Result};
 use crate::types::*;
-use alloy_primitives::{Address, U256};
+use alloy::primitives::{Address, U256};
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Deserializer};

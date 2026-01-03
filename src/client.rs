@@ -9,8 +9,8 @@ use crate::http_config::{
     create_colocated_client, create_internet_client, create_optimized_client, prewarm_connections,
 };
 use crate::types::{OrderOptions, PostOrder, SignedOrderRequest};
-use alloy_primitives::U256;
-use alloy_signer_local::PrivateKeySigner;
+use alloy::primitives::U256;
+use alloy::signers::local::PrivateKeySigner;
 use reqwest::header::HeaderName;
 use reqwest::Client;
 use reqwest::{Method, RequestBuilder};
@@ -285,7 +285,7 @@ impl ClobClient {
 
     /// Get the wallet address
     pub fn get_address(&self) -> Option<String> {
-        use alloy_primitives::hex;
+        use alloy::primitives::hex;
         self.signer
             .as_ref()
             .map(|s| hex::encode_prefixed(s.address().as_slice()))

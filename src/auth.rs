@@ -5,10 +5,10 @@
 
 use crate::errors::{PolyfillError, Result};
 use crate::types::ApiCredentials;
-use alloy_primitives::{hex::encode_prefixed, Address, U256};
-use alloy_signer::SignerSync;
-use alloy_signer_local::PrivateKeySigner;
-use alloy_sol_types::{eip712_domain, sol};
+use alloy::primitives::{hex::encode_prefixed, Address, U256};
+use alloy::signers::local::PrivateKeySigner;
+use alloy::signers::SignerSync;
+use alloy::sol_types::{eip712_domain, sol, SolStruct};
 use base64::engine::Engine;
 use hmac::{Hmac, Mac};
 use serde::Serialize;
@@ -84,8 +84,10 @@ pub fn sign_clob_auth_message(
         chain_id: polygon,
     );
 
+    // In alloy 1.x, compute the EIP-712 signing hash then sign it
+    let hash = auth_struct.eip712_signing_hash(&domain);
     let signature = signer
-        .sign_typed_data_sync(&auth_struct, &domain)
+        .sign_hash_sync(&hash)
         .map_err(|e| PolyfillError::crypto(format!("EIP-712 signature failed: {}", e)))?;
 
     Ok(encode_prefixed(signature.as_bytes()))
@@ -105,8 +107,10 @@ pub fn sign_order_message(
         verifying_contract: verifying_contract,
     );
 
+    // In alloy 1.x, compute the EIP-712 signing hash then sign it
+    let hash = order.eip712_signing_hash(&domain);
     let signature = signer
-        .sign_typed_data_sync(&order, &domain)
+        .sign_hash_sync(&hash)
         .map_err(|e| PolyfillError::crypto(format!("Order signature failed: {}", e)))?;
 
     Ok(encode_prefixed(signature.as_bytes()))
@@ -285,8 +289,8 @@ mod tests {
 
     #[test]
     fn test_create_l1_headers() {
-        use alloy_primitives::U256;
-        use alloy_signer_local::PrivateKeySigner;
+        use alloy::primitives::U256;
+        use alloy::signers::local::PrivateKeySigner;
 
         let private_key = "0x1234567890123456789012345678901234567890123456789012345678901234";
         let signer: PrivateKeySigner = private_key.parse().expect("Valid private key");
@@ -303,8 +307,8 @@ mod tests {
 
     #[test]
     fn test_create_l1_headers_different_nonces() {
-        use alloy_primitives::U256;
-        use alloy_signer_local::PrivateKeySigner;
+        use alloy::primitives::U256;
+        use alloy::signers::local::PrivateKeySigner;
 
         let private_key = "0x1234567890123456789012345678901234567890123456789012345678901234";
         let signer: PrivateKeySigner = private_key.parse().expect("Valid private key");
@@ -324,7 +328,7 @@ mod tests {
 
     #[test]
     fn test_create_l2_headers() {
-        use alloy_signer_local::PrivateKeySigner;
+        use alloy::signers::local::PrivateKeySigner;
 
         let private_key = "0x1234567890123456789012345678901234567890123456789012345678901234";
         let signer: PrivateKeySigner = private_key.parse().expect("Valid private key");
@@ -350,8 +354,8 @@ mod tests {
 
     #[test]
     fn test_eip712_signature_format() {
-        use alloy_primitives::U256;
-        use alloy_signer_local::PrivateKeySigner;
+        use alloy::primitives::U256;
+        use alloy::signers::local::PrivateKeySigner;
 
         let private_key = "0x1234567890123456789012345678901234567890123456789012345678901234";
         let signer: PrivateKeySigner = private_key.parse().expect("Valid private key");
